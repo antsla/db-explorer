@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345
+    command: --init-file /init.sql
+    volumes:
+      - data:/var/lib/mysql
+      - ./app/db/init.sql:/init.sql
+    expose:
+      - "3306"
+    ports:
+      - "3309:3306"
+    networks:
+      - myapp
+
+  db-explorer:
+    build: ./app
+    volumes:
+      - ./app/entrypoint.sh:/entrypoint.sh:ro
+    depends_on:
+      - db
+    expose:
+      - "8084"
+    ports:
+      - "8084:8084"
+    networks:
+      - myapp
+
+volumes:
+  data:
+
+networks:
+  myapp:
